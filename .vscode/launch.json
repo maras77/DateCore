@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/WestCore.API/bin/Debug/netcoreapp2.1/WestCore.API.dll",
+            "program": "${workspaceFolder}/DateCore.API/bin/Debug/netcoreapp2.1/DateCore.API.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/WestCore.API",
+            "cwd": "${workspaceFolder}/DateCore.API",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {

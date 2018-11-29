@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/WestCore.API/WestCore.API.csproj"
+                "${workspaceFolder}/DateCore.API/DateCore.API.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
