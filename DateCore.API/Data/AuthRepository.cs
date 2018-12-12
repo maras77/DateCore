@@ -16,7 +16,7 @@ namespace DateCore.API.Data
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _contex.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
+            var user = await _contex.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
             if(user == null)
                 return null;
             

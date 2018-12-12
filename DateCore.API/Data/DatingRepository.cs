@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DateCore.API.Models;
+using System.Linq;
 
 namespace DateCore.API.Data
 {
@@ -36,6 +37,11 @@ namespace DateCore.API.Data
         public async Task<Photo> GetPhoto(int id)
         {
             return await _context.Photos.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<Photo> GetMainPhotoForUser(int userId)
+        {
+            return await _context.Photos.Where(x => x.UserId == userId).FirstOrDefaultAsync(x => x.IsMain);
         }
 
         public async Task<bool> SaveAll()
