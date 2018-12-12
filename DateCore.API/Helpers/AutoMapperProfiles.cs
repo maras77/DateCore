@@ -25,8 +25,10 @@ namespace DateCore.API.Helpers
                 opt.MapFrom(src => src.DateOfBirth.CalculateAge());
             });
 
-            CreateMap<UserForUpdateDTO,User>();
-            CreateMap<Photo,PhotosForDetailedDTO>();
+            CreateMap<UserForUpdateDTO, User>();
+            CreateMap<Photo, PhotosForDetailedDTO>();
+            CreateMap<PhotoForCreationDTO, Photo>();
+            CreateMap<Photo, PhotoForReturnDTO>();
         }
     }
 }

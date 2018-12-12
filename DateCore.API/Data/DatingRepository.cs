@@ -33,9 +33,15 @@ namespace DateCore.API.Data
             return await _context.Users.Include(x => x.Photos).ToListAsync();
         }
 
+        public async Task<Photo> GetPhoto(int id)
+        {
+            return await _context.Photos.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<bool> SaveAll()
         {
             return await _context.SaveChangesAsync() > 0;
         }
+
     }
 }
