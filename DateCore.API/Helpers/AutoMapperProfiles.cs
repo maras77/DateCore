@@ -29,6 +29,7 @@ namespace DateCore.API.Helpers
             CreateMap<Photo, PhotosForDetailedDTO>();
             CreateMap<PhotoForCreationDTO, Photo>();
             CreateMap<Photo, PhotoForReturnDTO>();
+            CreateMap<UserRegisterDTO, User>();
         }
     }
 }

@@ -38,13 +38,11 @@ namespace DateCore.API.Controllers
             if (await _repo.UserExists(userDTO.Username))
                 return BadRequest("Username already exists");
 
-            var newUser = new User
-            {
-                Username = userDTO.Username,
-            };
-
+            var newUser = _mapper.Map<User>(userDTO);
             var createdUser = await _repo.Register(newUser, userDTO.Password);
-            return StatusCode(201);
+            var userToReturn = _mapper.Map<UserForDetailedDTO>(createdUser);
+
+            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
         }
 
         [HttpPost("Login")]
