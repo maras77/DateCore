@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DateCore.API.Models;
 using System.Linq;
+using DateCore.API.Helpers;
 
 namespace DateCore.API.Data
 {
@@ -29,9 +30,11 @@ namespace DateCore.API.Data
             return await _context.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            return await _context.Users.Include(x => x.Photos).ToListAsync();
+            var users =  _context.Users.Include(x => x.Photos);
+            return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<Photo> GetPhoto(int id)
