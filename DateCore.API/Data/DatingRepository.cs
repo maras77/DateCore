@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using DateCore.API.Models;
 using System.Linq;
 using DateCore.API.Helpers;
+using System;
 
 namespace DateCore.API.Data
 {
@@ -33,7 +34,17 @@ namespace DateCore.API.Data
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users =  _context.Users.Include(x => x.Photos);
+            var users =  _context.Users.Include(x => x.Photos).AsQueryable();
+            users = users.Where(x => x.Id != userParams.UserId);
+            users = users.Where(x => x.Gender == userParams.Gender);
+
+            if(userParams.MinAge != 18 || userParams.MaxAge != 99)
+            {
+                var minDob = DateTime.Today.AddYears(-userParams.MaxAge -1);
+                var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+                users = users.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
+            }
+
             return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
