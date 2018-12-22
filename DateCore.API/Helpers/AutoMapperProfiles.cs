@@ -30,6 +30,10 @@ namespace DateCore.API.Helpers
             CreateMap<PhotoForCreationDTO, Photo>();
             CreateMap<Photo, PhotoForReturnDTO>();
             CreateMap<UserRegisterDTO, User>();
+            CreateMap<MessageForCreationDTO, Message>().ReverseMap();
+            CreateMap<Message, MessageToReturnDTO>()
+            .ForMember(x => x.SenderPhotoUrl, options => options.MapFrom(x => x.Sender.Photos.FirstOrDefault(p => p.IsMain).Url))
+            .ForMember(x => x.RecipientPhotoUrl, options => options.MapFrom(x => x.Recipient.Photos.FirstOrDefault(p => p.IsMain).Url));
         }
     }
 }

@@ -111,5 +111,45 @@ namespace DateCore.API.Data
             );
         }
 
+        public async Task<Message> GetMessage(int id)
+        {
+            return await _context.Messages.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams)
+        {
+            var messages = _context.Messages
+                .Include(x => x.Sender).ThenInclude(x => x.Photos)
+                .Include(x => x.Recipient).ThenInclude(x => x.Photos)
+                .AsQueryable();
+            
+            switch (messageParams.MessageContainer)
+            {
+                case "Inbox":
+                    messages = messages.Where(x => x.RecipientId == messageParams.UserId && !x.IsRecipientDeleted);
+                    break;
+                case "Outbox":
+                    messages = messages.Where(x => x.SenderId == messageParams.UserId && !x.IsSenderDeleted);
+                    break;
+                default:
+                    messages = messages.Where(x => x.RecipientId == messageParams.UserId && !x.IsRecipientDeleted && !x.IsRead);
+                    break;
+            }
+
+            messages = messages.OrderByDescending(x => x.MessageSent);
+            return await PagedList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
+        }
+
+        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        {
+            return await _context.Messages
+                .Include(x => x.Sender).ThenInclude(x => x.Photos)
+                .Include(x => x.Recipient).ThenInclude(x => x.Photos)
+                .Where(x => x.RecipientId == userId && !x.IsRecipientDeleted && x.SenderId == recipientId
+                || x.RecipientId == recipientId && x.SenderId == userId && !x.IsSenderDeleted)
+                .OrderByDescending(x => x.MessageSent)
+                .ToListAsync();
+
+        }
     }
 }
