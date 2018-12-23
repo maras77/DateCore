@@ -13,7 +13,7 @@ namespace DateCore.API.Helpers
         {
             var resultContext = await next();
 
-            var userId = int.Parse(resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = Guid.Parse(resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var repo = resultContext.HttpContext.RequestServices.GetService<IDatingRepository>();
 
             var user = await repo.GetUser(userId);

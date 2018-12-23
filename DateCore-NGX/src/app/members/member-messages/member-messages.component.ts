@@ -11,7 +11,7 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./member-messages.component.css']
 })
 export class MemberMessagesComponent implements OnInit {
-  @Input() recipientId: number;
+  @Input() recipientId: string;
   messages: Message[];
   newMessage: any = {};
 
@@ -22,7 +22,7 @@ export class MemberMessagesComponent implements OnInit {
   }
 
   loadMessages() {
-    const currentUserId = +this.authService.decodedToken.nameid;
+    const currentUserId = this.authService.decodedToken.nameid;
     this.userService.getMessageThread(this.authService.decodedToken.nameid, this.recipientId)
     .pipe(
       tap(messages => {

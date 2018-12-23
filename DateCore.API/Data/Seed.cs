@@ -2,42 +2,29 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using DateCore.API.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace DateCore.API.Data
 {
     public class Seed
     {
-        private readonly DataContext _context;
-        public Seed(DataContext context)
+        private readonly UserManager<User> _userManager;
+        public Seed(UserManager<User> userManager)
         {
-            _context = context;
+            _userManager = userManager;
         }
 
         public void SeedUsers()
         {
-            var userData = File.ReadAllText("Data/UserSeedData.json");
-            var users = JsonConvert.DeserializeObject<List<User>>(userData);
-            foreach (var user in users)
+            if(!_userManager.Users.Any())
             {
-                byte[] passHash, passSalt;
-                CreatePasswordHash("password", out passHash, out passSalt);
-
-                user.PasswordHash = passHash;
-                user.PasswordSalt = passSalt;
-                user.Username = user.Username.ToLower();
-
-                _context.Users.Add(user);
-            }
-
-            _context.SaveChanges();
-        }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using(var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                var userData = File.ReadAllText("Data/UserSeedData.json");
+                var users = JsonConvert.DeserializeObject<List<User>>(userData);
+                foreach (var user in users)
+                {
+                    _userManager.CreateAsync(user, "password").Wait();
+                }
             }
         }
     }

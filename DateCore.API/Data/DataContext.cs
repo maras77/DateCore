@@ -1,20 +1,39 @@
 using Microsoft.EntityFrameworkCore;
 using DateCore.API.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace DateCore.API.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User, Role, Guid, 
+    IdentityUserClaim<Guid>, UserRole, IdentityUserLogin<Guid>, 
+    IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public DbSet<Value> Values { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserRole>(userRole => {
+                userRole.HasKey(x => new {x.UserId, x.RoleId});
+
+                userRole.HasOne(x => x.Role)
+                .WithMany(x => x.UserRoles)
+                .HasForeignKey(x => x.RoleId)
+                .IsRequired();
+
+                userRole.HasOne(x => x.User)
+                .WithMany(x => x.UserRoles)
+                .HasForeignKey(x => x.UserId)
+                .IsRequired();
+            });
+
             modelBuilder.Entity<Like>()
             .HasKey(x => new {x.LikerId, x.LikeeId});
 

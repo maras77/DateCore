@@ -5,8 +5,8 @@ namespace DateCore.API.DTOs
 {
     public class MessageForCreationDTO
     {
-        public int SenderId { get; set; }
-        public int RecipientId { get; set; }
+        public Guid SenderId { get; set; }
+        public Guid RecipientId { get; set; }
         public string Content { get; set; }
         public DateTime MessageSent { get; set; }
         public MessageForCreationDTO()

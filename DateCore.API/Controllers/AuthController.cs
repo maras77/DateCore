@@ -13,48 +13,70 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace DateCore.API.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
+        public AuthController(IConfiguration config, IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _mapper = mapper;
+            _userManager = userManager;
+            _signInManager = signInManager;
             _config = config;
-            _repo = repo;
         }
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register(UserRegisterDTO userDTO)
         {
-            userDTO.Username = userDTO.Username.ToLower();
-            if (await _repo.UserExists(userDTO.Username))
-                return BadRequest("Username already exists");
-
             var newUser = _mapper.Map<User>(userDTO);
-            var createdUser = await _repo.Register(newUser, userDTO.Password);
-            var userToReturn = _mapper.Map<UserForDetailedDTO>(createdUser);
+            var result = await _userManager.CreateAsync(newUser, userDTO.Password);
+            var userToReturn = _mapper.Map<UserForDetailedDTO>(newUser);
 
-            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
+            if(result.Succeeded)
+            {
+                return CreatedAtRoute("GetUser", new {controller = "Users", id = userToReturn.Id}, userToReturn);
+            }
+
+            return BadRequest(result.Errors);
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDTO userDTO)
         {
-            var userFromRepo = await _repo.Login(userDTO.Username, userDTO.Password);
-            if (userFromRepo == null) return Unauthorized();
+            var user = await _userManager.FindByNameAsync(userDTO.Username);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, userDTO.Password, true);
+            if(result.Succeeded)
+            {
+                var appUser = await _userManager.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.NormalizedUserName == userDTO.Username.ToUpper());
+                var userToReturn = _mapper.Map<UserForListDTO>(appUser);
 
+                return Ok(new
+                {
+                    token = GenerateJwtToken(appUser),
+                    user = userToReturn
+                });
+            }
+
+            return Unauthorized();
+        }
+
+        private string GenerateJwtToken(User user)
+        {
             // prepare token data
             var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName)
             };
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
@@ -71,14 +93,7 @@ namespace DateCore.API.Controllers
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            var user = _mapper.Map<UserForListDTO>(userFromRepo);
-
-            return Ok(new
-            {
-                token = tokenHandler.WriteToken(token),
-                user
-            });
+            return tokenHandler.WriteToken(token);
         }
 
     }

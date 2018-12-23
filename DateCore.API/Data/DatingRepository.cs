@@ -26,7 +26,7 @@ namespace DateCore.API.Data
             _context.Remove(entity);
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(Guid id)
         {
             return await _context.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -75,7 +75,7 @@ namespace DateCore.API.Data
             return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
-        private async Task<IEnumerable<int>> GetUserLikes(int userId, bool likers)
+        private async Task<IEnumerable<Guid>> GetUserLikes(Guid userId, bool likers)
         {
             var user = await _context.Users
             .Include(x => x.Likers)
@@ -89,12 +89,12 @@ namespace DateCore.API.Data
             return user.Likees.Where(u => u.LikerId == userId).Select(x => x.LikeeId);
         }
 
-        public async Task<Photo> GetPhoto(int id)
+        public async Task<Photo> GetPhoto(Guid id)
         {
             return await _context.Photos.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<Photo> GetMainPhotoForUser(int userId)
+        public async Task<Photo> GetMainPhotoForUser(Guid userId)
         {
             return await _context.Photos.Where(x => x.UserId == userId).FirstOrDefaultAsync(x => x.IsMain);
         }
@@ -104,14 +104,14 @@ namespace DateCore.API.Data
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<Like> GetLike(int userId, int recipientId)
+        public async Task<Like> GetLike(Guid userId, Guid recipientId)
         {
             return await _context.Likes.FirstOrDefaultAsync(x => 
                 x.LikerId == userId && x.LikeeId == recipientId
             );
         }
 
-        public async Task<Message> GetMessage(int id)
+        public async Task<Message> GetMessage(Guid id)
         {
             return await _context.Messages.FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -140,7 +140,7 @@ namespace DateCore.API.Data
             return await PagedList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
         }
 
-        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        public async Task<IEnumerable<Message>> GetMessageThread(Guid userId, Guid recipientId)
         {
             return await _context.Messages
                 .Include(x => x.Sender).ThenInclude(x => x.Photos)

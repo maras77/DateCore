@@ -56,23 +56,23 @@ export class UserService {
     return this.http.get<User>(this.baseUrl + 'users/' + id);
   }
 
-  updateUser(id: number, user: User) {
+  updateUser(id: string, user: User) {
     return this.http.put(this.baseUrl + 'users/' + id, user);
   }
 
-  setMainPhoto(userId: number, id: number) {
+  setMainPhoto(userId: string, id: string) {
     return this.http.post(this.baseUrl + 'users/' + userId + '/photos/' + id + '/setMain', {});
   }
 
-  deletePhoto(userId: number, id: number) {
+  deletePhoto(userId: string, id: string) {
     return this.http.delete(this.baseUrl + 'users/' + userId + '/photos/' + id);
   }
 
-  sendLike(id: number, recipientId: number) {
+  sendLike(id: string, recipientId: string) {
     return this.http.post(this.baseUrl + 'users/' + id + '/like/' + recipientId, {});
   }
 
-  getMessages(id: number, page?, itemsPerPage?, messageContainer?) {
+  getMessages(id: string, page?, itemsPerPage?, messageContainer?) {
     const paginatedResult: PaginatedResult<Message[]> = new PaginatedResult<Message[]>();
     let params = new HttpParams();
 
@@ -94,19 +94,19 @@ export class UserService {
     );
   }
 
-  getMessageThread(id: number, recipientId: number) {
+  getMessageThread(id: string, recipientId: string) {
     return this.http.get<Message[]>(this.baseUrl + 'users/' + id + '/messages/thread/' + recipientId);
   }
 
-  sendMessage(id: number, message: Message) {
+  sendMessage(id: string, message: Message) {
     return this.http.post(this.baseUrl + 'users/' + id + '/messages', message);
   }
 
-  deleteMessage(id: number, userId: number) {
+  deleteMessage(id: string, userId: string) {
     return this.http.post(this.baseUrl + 'users/' + userId + '/messages/' + id, {});
   }
 
-  markAsRead(userId: number, messageId: number) {
+  markAsRead(userId: string, messageId: string) {
     return this.http.post(this.baseUrl + 'users/' + userId + '/messages/' + messageId + '/read', {})
     .subscribe();
   }

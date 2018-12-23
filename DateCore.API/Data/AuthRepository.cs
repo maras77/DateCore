@@ -16,12 +16,12 @@ namespace DateCore.API.Data
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _contex.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.Username.ToLower() == username.ToLower());
+            var user = await _contex.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.UserName.ToLower() == username.ToLower());
             if(user == null)
                 return null;
             
-            if(!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                return null;
+            // if(!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            //     return null;
 
             return user;
         }
@@ -44,9 +44,9 @@ namespace DateCore.API.Data
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.Username = user.Username.ToLower();
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            user.UserName = user.UserName.ToLower();
+            // user.PasswordHash = passwordHash;
+            // user.PasswordSalt = passwordSalt;
 
             await _contex.Users.AddAsync(user);
             await _contex.SaveChangesAsync();
@@ -65,7 +65,7 @@ namespace DateCore.API.Data
 
         public async Task<bool> UserExists(string username)
         {
-            if(await _contex.Users.AnyAsync(x => x.Username.ToLower() == username.ToLower()))
+            if(await _contex.Users.AnyAsync(x => x.UserName.ToLower() == username.ToLower()))
                 return true;
             
             return false;

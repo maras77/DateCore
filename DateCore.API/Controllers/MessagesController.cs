@@ -19,7 +19,6 @@ using DateCore.API.Helpers;
 namespace DateCore.API.Controllers
 {
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
     [Route("api/users/{userId}/[controller]")]
     [ApiController]
     public class MessagesController : ControllerBase
@@ -34,9 +33,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetMessage")]
-        public async Task<IActionResult> GetMessage(int userId, int id)
+        public async Task<IActionResult> GetMessage(Guid userId, Guid id)
         {
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             var messageFromRepo = await _repo.GetMessage(id);
@@ -47,9 +46,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMessagesForUser(int userId, [FromQuery]MessageParams messageParams)
+        public async Task<IActionResult> GetMessagesForUser(Guid userId, [FromQuery]MessageParams messageParams)
         {
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             messageParams.UserId = userId;
@@ -62,9 +61,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpGet("thread/{recipientId}")]
-        public async Task<IActionResult> GetMessageThread(int userId, int recipientId)
+        public async Task<IActionResult> GetMessageThread(Guid userId, Guid recipientId)
         {
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             var messageFromRepo = await _repo.GetMessageThread(userId, recipientId);
@@ -74,10 +73,10 @@ namespace DateCore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMessage(int userId, MessageForCreationDTO messageForCreationDTO)
+        public async Task<IActionResult> CreateMessage(Guid userId, MessageForCreationDTO messageForCreationDTO)
         {
             
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             messageForCreationDTO.SenderId = userId;
@@ -101,9 +100,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpPost("{id}")]
-        public async Task<IActionResult> DeleteMessage(int id, int userId)
+        public async Task<IActionResult> DeleteMessage(Guid id, Guid userId)
         {          
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             var messageFromRepo = await _repo.GetMessage(id);
@@ -124,9 +123,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpPost("{id}/read")]
-        public async Task<IActionResult> MarkMessageAsRead(int id, int userId)
+        public async Task<IActionResult> MarkMessageAsRead(Guid id, Guid userId)
         { 
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
             
             var messageFromRepo = await _repo.GetMessage(id);

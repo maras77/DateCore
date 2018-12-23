@@ -1,3 +1,5 @@
+using System;
+
 namespace DateCore.API.Helpers
 {
     public class MessageParams
@@ -11,7 +13,7 @@ namespace DateCore.API.Helpers
             set { pageSize = (value > MaxPageSize) ? MaxPageSize : value;}
         }
         
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public string MessageContainer { get; set; } = "Unread";
     }
 }

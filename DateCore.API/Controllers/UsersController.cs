@@ -19,7 +19,6 @@ using DateCore.API.Helpers;
 namespace DateCore.API.Controllers
 {
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -36,7 +35,7 @@ namespace DateCore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
-            var currentUserId= int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var currentUserId= Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _repo.GetUser(currentUserId);
             userParams.UserId = currentUserId;
 
@@ -52,7 +51,7 @@ namespace DateCore.API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetUser")]
-        public async Task<IActionResult> GetUser(int id)
+        public async Task<IActionResult> GetUser(Guid id)
         {
             var user = await _repo.GetUser(id);
             var userView = _mapper.Map<UserForDetailedDTO>(user);
@@ -60,9 +59,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDTO userForUpdateDto)
+        public async Task<IActionResult> UpdateUser(Guid id, UserForUpdateDTO userForUpdateDto)
         {
-            if(id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(id != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
             
             var userFromRepo = await _repo.GetUser(id);
@@ -75,9 +74,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpPost("{id}/like/{recipientId}")]
-        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        public async Task<IActionResult> LikeUser(Guid id, Guid recipientId)
         {
-            if(id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(id != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
             
             var like = await _repo.GetLike(id, recipientId);

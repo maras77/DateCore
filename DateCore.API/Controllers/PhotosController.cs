@@ -21,7 +21,6 @@ using CloudinaryDotNet.Actions;
 
 namespace DateCore.API.Controllers
 {
-    [Authorize]
     [Route("api/users/{userId}/photos")]
     [ApiController]
     public class PhotosController : ControllerBase
@@ -47,7 +46,7 @@ namespace DateCore.API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetPhoto")]
-        public async Task<IActionResult> GetPhoto(int id)
+        public async Task<IActionResult> GetPhoto(Guid id)
         {
             var photoFromRepo = await _repo.GetPhoto(id);
             var photo = _mapper.Map<PhotoForReturnDTO>(photoFromRepo);
@@ -55,9 +54,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPhotoForUser(int userId, [FromForm]PhotoForCreationDTO photoForCreationDTO)
+        public async Task<IActionResult> AddPhotoForUser(Guid userId, [FromForm]PhotoForCreationDTO photoForCreationDTO)
         {
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
             
             var userFromRepo = await _repo.GetUser(userId);
@@ -99,9 +98,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpPost("{id}/setMain")]
-        public async Task<IActionResult> SetMainPhoto(int userId, int id)
+        public async Task<IActionResult> SetMainPhoto(Guid userId, Guid id)
         {
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             var userFromRepo = await _repo.GetUser(userId);
@@ -124,9 +123,9 @@ namespace DateCore.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        public async Task<IActionResult> DeletePhoto(Guid userId, Guid id)
         {
-             if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+             if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             var userFromRepo = await _repo.GetUser(userId);

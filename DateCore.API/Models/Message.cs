@@ -4,10 +4,10 @@ namespace DateCore.API.Models
 {
     public class Message
     {
-        public int Id { get; set; }
-        public int SenderId { get; set; }
+        public Guid Id { get; set; }
+        public Guid SenderId { get; set; }
         public User Sender { get; set; }
-        public int RecipientId { get; set; }
+        public Guid RecipientId { get; set; }
         public User Recipient { get; set; }
         public string Content { get; set; }
         public DateTime MessageSent { get; set; }
