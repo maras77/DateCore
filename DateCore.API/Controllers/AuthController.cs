@@ -63,7 +63,7 @@ namespace DateCore.API.Controllers
 
                 return Ok(new
                 {
-                    token = GenerateJwtToken(appUser),
+                    token = await GenerateJwtToken(appUser),
                     user = userToReturn
                 });
             }
@@ -71,13 +71,20 @@ namespace DateCore.API.Controllers
             return Unauthorized();
         }
 
-        private string GenerateJwtToken(User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
             // prepare token data
-            var claims = new[] {
+            var claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName)
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
                     _config.GetSection("AppSettings:Token").Value

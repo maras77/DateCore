@@ -65,6 +65,12 @@ namespace DateCore.API
                 };
             });
 
+            services.AddAuthorization(opt => {
+                opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                opt.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+                opt.AddPolicy("VipOnly", policy => policy.RequireRole("Admin", "VIP"));
+            });
+
             services.AddMvc(opt => 
                 {
                     var policy = new AuthorizationPolicyBuilder()
