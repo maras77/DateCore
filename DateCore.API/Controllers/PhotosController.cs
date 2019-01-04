@@ -59,7 +59,7 @@ namespace DateCore.API.Controllers
             if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
             
-            var userFromRepo = await _repo.GetUser(userId);
+            var userFromRepo = await _repo.GetUser(userId, true);
 
             var file = photoForCreationDTO.File;
             var uploadResult = new ImageUploadResult();
@@ -103,7 +103,7 @@ namespace DateCore.API.Controllers
             if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
-            var userFromRepo = await _repo.GetUser(userId);
+            var userFromRepo = await _repo.GetUser(userId, true);
 
             if(!userFromRepo.Photos.Any(p => p.Id == id))
                 return Unauthorized();
@@ -128,7 +128,7 @@ namespace DateCore.API.Controllers
              if(userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
-            var userFromRepo = await _repo.GetUser(userId);
+            var userFromRepo = await _repo.GetUser(userId, true);
 
             if(!userFromRepo.Photos.Any(p => p.Id == id))
                 return Unauthorized();

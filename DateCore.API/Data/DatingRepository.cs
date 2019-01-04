@@ -26,9 +26,13 @@ namespace DateCore.API.Data
             _context.Remove(entity);
         }
 
-        public async Task<User> GetUser(Guid id)
+        public async Task<User> GetUser(Guid id, bool isCurrentUser)
         {
-            return await _context.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.Id == id);
+            var query = _context.Users.Include(x => x.Photos).AsQueryable();
+            if(isCurrentUser)
+                query = query.IgnoreQueryFilters();
+            
+            return await query.FirstOrDefaultAsync(x => x.Id == id);
         }
 
 
@@ -91,7 +95,7 @@ namespace DateCore.API.Data
 
         public async Task<Photo> GetPhoto(Guid id)
         {
-            return await _context.Photos.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Photos.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Photo> GetMainPhotoForUser(Guid userId)

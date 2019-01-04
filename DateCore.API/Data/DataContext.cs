@@ -58,6 +58,8 @@ namespace DateCore.API.Data
             .HasOne(x => x.Recipient)
             .WithMany(x => x.MessagesReceived)
             .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace DateCore.API.Controllers
         public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
             var currentUserId= Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userFromRepo = await _repo.GetUser(currentUserId);
+            var userFromRepo = await _repo.GetUser(currentUserId,true);
             userParams.UserId = currentUserId;
 
             if(string.IsNullOrEmpty(userParams.Gender)) 
@@ -53,7 +53,8 @@ namespace DateCore.API.Controllers
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(Guid id)
         {
-            var user = await _repo.GetUser(id);
+            var isCurrentUser = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value) == id;
+            var user = await _repo.GetUser(id, isCurrentUser);
             var userView = _mapper.Map<UserForDetailedDTO>(user);
             return Ok(userView);
         }
@@ -64,7 +65,7 @@ namespace DateCore.API.Controllers
             if(id != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
             
-            var userFromRepo = await _repo.GetUser(id);
+            var userFromRepo = await _repo.GetUser(id, true);
             _mapper.Map(userForUpdateDto, userFromRepo);
             
             if(await _repo.SaveAll())
@@ -83,7 +84,7 @@ namespace DateCore.API.Controllers
             if(like != null)
                 return BadRequest("You already like this user");
 
-            if(await _repo.GetUser(recipientId) == null)
+            if(await _repo.GetUser(recipientId, false) == null)
                 return NotFound();
             
             like = new Like { LikerId = id, LikeeId = recipientId };

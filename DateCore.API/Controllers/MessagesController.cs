@@ -80,7 +80,7 @@ namespace DateCore.API.Controllers
                 return Unauthorized();
 
             messageForCreationDTO.SenderId = userId;
-            var recipient = await _repo.GetUser(messageForCreationDTO.RecipientId);
+            var recipient = await _repo.GetUser(messageForCreationDTO.RecipientId, true);
 
             if(recipient == null)
                 return BadRequest("Could not find user");
@@ -90,7 +90,7 @@ namespace DateCore.API.Controllers
             
             if(await _repo.SaveAll())
             {
-                var sender = await _repo.GetUser(userId); // automapper will use sender props to fill MessageToReturnDTO
+                var sender = await _repo.GetUser(userId, false); // automapper will use sender props to fill MessageToReturnDTO
                 var messageToReturn = _mapper.Map<MessageToReturnDTO>(message);
                 return CreatedAtRoute("GetMessage", new { id = message.Id}, messageToReturn);
             }

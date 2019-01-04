@@ -11,3 +11,16 @@ img.img-thumbnail {
 input[type=file] {
     color: transparent;
 }
+
+.img-wrapper {
+    position: relative;
+}
+
+.not-approved {
+    opacity: 0.2;
+}
+
+.img-text {
+    position: absolute;
+    bottom: 30%;
+}
